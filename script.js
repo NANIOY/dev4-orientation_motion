@@ -22,22 +22,16 @@ function movePlayer(event) {
     const dy = newY - player.offsetTop;
     const distance = Math.sqrt(dx * dx + dy * dy);
 
-    let finalX = newX;
-    let finalY = newY;
-
     for (let step = 0; step < distance; step += stepSize) {
         const nextX = player.offsetLeft + dx * (step / distance);
         const nextY = player.offsetTop + dy * (step / distance);
         if (isCollidingWithWalls(nextX, nextY, playerSize)) {
-            const bounceBackFactor = 0.1;
-            finalX = player.offsetLeft - dx * bounceBackFactor;
-            finalY = player.offsetTop - dy * bounceBackFactor;
-            break;
+            return;
         }
     }
 
-    player.style.left = finalX + 'px';
-    player.style.top = finalY + 'px';
+    player.style.left = newX + 'px';
+    player.style.top = newY + 'px';
 
     if (checkCollision(player, end)) {
         alert('Congratulations! You made it to the end!');
