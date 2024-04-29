@@ -1,76 +1,60 @@
-document.addEventListener('DOMContentLoaded', function () {
-    const player = document.getElementById('player');
-    const gameArea = document.getElementById('game-area');
-    const goal = document.getElementById('goal');
-    const walls = document.querySelectorAll('.wall');
+const maze = document.getElementById('maze');
+const player = document.getElementById('player');
+const end = document.getElementById('end');
+const walls = document.querySelectorAll('.wall');
 
-    let canMove = true;
+window.addEventListener('deviceorientation', movePlayer);
 
-    function resetPlayer() {
-        const bottomCenterTop = gameArea.clientHeight - player.clientHeight;
-        const bottomCenterLeft = (gameArea.clientWidth / 2) - (player.clientWidth / 2);
-        player.style.top = `${bottomCenterTop}px`;
-        player.style.left = `${bottomCenterLeft}px`;
-        canMove = true;
-    }
+function movePlayer(event) {
+    const mazeRect = maze.getBoundingClientRect();
+    const playerSize = parseInt(window.getComputedStyle(player).width);
+    const mazeCenterX = mazeRect.width / 2;
+    const mazeCenterY = mazeRect.height / 2;
 
-    function handleOrientation(event) {
-        if (!canMove) {
+    let newX = mazeCenterX + event.gamma * (mazeRect.width / 90) - playerSize / 2;
+    let newY = mazeCenterY + event.beta * (mazeRect.height / 180) - playerSize / 2;
+
+    newX = Math.max(0, Math.min(mazeRect.width - playerSize, newX));
+    newY = Math.max(0, Math.min(mazeRect.height - playerSize, newY));
+
+    const stepSize = 2;
+    const dx = newX - player.offsetLeft;
+    const dy = newY - player.offsetTop;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    for (let step = 0; step < distance; step += stepSize) {
+        const nextX = player.offsetLeft + dx * (step / distance);
+        const nextY = player.offsetTop + dy * (step / distance);
+        if (isCollidingWithWalls(nextX, nextY, playerSize)) {
             return;
         }
-
-        let x = event.beta;
-        let y = event.gamma;
-
-        let newX = gameArea.clientWidth / 2 + (y / 30) * (gameArea.clientWidth / 2 - player.clientWidth);
-        let newY = gameArea.clientHeight / 2 + (x / 30) * (gameArea.clientHeight / 2 - player.clientHeight);
-
-        // update player position
-        player.style.left = `${Math.max(0, Math.min(gameArea.clientWidth - player.clientWidth, newX))}px`;
-        player.style.top = `${Math.max(0, Math.min(gameArea.clientHeight - player.clientHeight, newY))}px`;
-
-        checkInteractions(newX, newY);
     }
 
-    function checkInteractions(newX, newY) {
-        if (checkCollision(newX, newY)) {
-            canMove = false;
-            setTimeout(() => {
-                alert('You hit a wall!');
-                resetPlayer();
-            }, 100);
-        }
+    player.style.left = newX + 'px';
+    player.style.top = newY + 'px';
 
-        if (checkGoal(newX, newY)) {
-            canMove = false;
-            setTimeout(() => {
-                alert('Congratulations, you reached the goal!');
-                resetPlayer();
-            }, 100);
+    if (checkCollision(player, end)) {
+        alert('Congratulations! You made it to the end!');
+    }
+}
+
+function isCollidingWithWalls(x, y, playerSize) {
+    for (let wall of walls) {
+        const wallRect = wall.getBoundingClientRect();
+        if (x + playerSize >= wallRect.left && x <= wallRect.right &&
+            y + playerSize >= wallRect.top && y <= wallRect.bottom) {
+            return true;
         }
     }
+    return false;
+}
 
-    function checkCollision(newX, newY) {
-        const playerRect = player.getBoundingClientRect();
-        return Array.from(walls).some(wall => {
-            const rect = wall.getBoundingClientRect();
-            return !(rect.right < playerRect.left ||
-                rect.left > playerRect.right ||
-                rect.bottom < playerRect.top ||
-                rect.top > playerRect.bottom);
-        });
-    }
+function checkCollision(player, target) {
+    const playerRect = player.getBoundingClientRect();
+    const targetRect = target.getBoundingClientRect();
 
-    function checkGoal(newX, newY) {
-        const rect = goal.getBoundingClientRect();
-        const playerRect = player.getBoundingClientRect();
-        return !(rect.right < playerRect.left ||
-            rect.left > playerRect.right ||
-            rect.bottom < playerRect.top ||
-            rect.top > playerRect.bottom);
-    }
-
-    window.addEventListener('deviceorientation', handleOrientation);
-
-    resetPlayer();
-});
+    return !(playerRect.right < targetRect.left ||
+        playerRect.left > targetRect.right ||
+        playerRect.bottom < targetRect.top ||
+        playerRect.top > targetRect.bottom);
+}
