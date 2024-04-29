@@ -23,27 +23,28 @@ function movePlayer(event) {
     const dx = newX - prevX;
     const dy = newY - prevY;
 
-    if (!isCollidingWithWalls(newX, newY, playerSize)) {
-        player.style.left = newX + 'px';
-        player.style.top = newY + 'px';
-        prevX = newX;
-        prevY = newY;
-    } else {
-        const stepSize = 2;
-        const distance = Math.sqrt(dx * dx + dy * dy);
+    const stepSize = 2;
+    const distance = Math.sqrt(dx * dx + dy * dy);
 
-        for (let step = 0; step < distance; step += stepSize) {
-            const nextX = prevX + dx * (step / distance);
-            const nextY = prevY + dy * (step / distance);
-            if (!isCollidingWithWalls(nextX, nextY, playerSize)) {
-                player.style.left = nextX + 'px';
-                player.style.top = nextY + 'px';
-                prevX = nextX;
-                prevY = nextY;
-                break;
-            }
+    let finalX = prevX;
+    let finalY = prevY;
+
+    for (let step = 0; step < distance; step += stepSize) {
+        const nextX = prevX + dx * (step / distance);
+        const nextY = prevY + dy * (step / distance);
+        if (isCollidingWithWalls(nextX, nextY, playerSize)) {
+            finalX = prevX;
+            finalY = prevY;
+            break;
         }
+        finalX = nextX;
+        finalY = nextY;
     }
+
+    player.style.left = finalX + 'px';
+    player.style.top = finalY + 'px';
+    prevX = finalX;
+    prevY = finalY;
 
     if (checkCollision(player, end)) {
         alert('Congratulations! You made it to the end!');
