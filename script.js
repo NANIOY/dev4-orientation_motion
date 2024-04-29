@@ -2,6 +2,8 @@ const maze = document.getElementById('maze');
 const player = document.getElementById('player');
 let end = document.getElementById('end');
 const walls = document.querySelectorAll('.wall');
+const scoreCounter = document.getElementById('scoreCounter');
+let score = 0;
 
 let prevX = 0;
 let prevY = 0;
@@ -47,6 +49,8 @@ function movePlayer(event) {
     prevY = finalY;
 
     if (checkCollision(player, end)) {
+        score++;
+        scoreCounter.textContent = 'Score: ' + score;
         alert('Congratulations! You made it to the end!');
         moveEndpointToTopRight();
     }
@@ -74,6 +78,6 @@ function checkCollision(player, target) {
 }
 
 function moveEndpointToTopRight() {
-    end.style.top = '0px';
-    end.style.right = '0px';
+    end.style.top = '10px';
+    end.style.right = '10px';
 }
