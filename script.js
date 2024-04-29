@@ -28,7 +28,6 @@ function enableOrientation() {
     alert("To play this game, please enable device orientation by rotating your device. Tap 'OK' to continue.");
     orientationButton.style.display = 'none';
     window.addEventListener('deviceorientation', movePlayer);
-    document.addEventListener('mousemove', movePlayerWithMouse);
 }
 
 function movePlayer(event) {
@@ -39,58 +38,51 @@ function movePlayer(event) {
 
     let newX, newY;
 
-    if (event instanceof MouseEvent) {
-        newX = event.clientX - playerSize / 2;
-        newY = event.clientY - playerSize / 2;
-    } else if (event instanceof DeviceOrientationEvent) {
+    if (event instanceof DeviceOrientationEvent) {
         newX = mazeCenterX + event.gamma * (mazeRect.width / 90) - playerSize / 2;
         newY = mazeCenterY + event.beta * (mazeRect.height / 180) - playerSize / 2;
-    }
 
-    newX = Math.max(0, Math.min(mazeRect.width - playerSize, newX));
-    newY = Math.max(0, Math.min(mazeRect.height - playerSize, newY));
+        newX = Math.max(0, Math.min(mazeRect.width - playerSize, newX));
+        newY = Math.max(0, Math.min(mazeRect.height - playerSize, newY));
 
-    const dx = newX - prevX;
-    const dy = newY - prevY;
+        const dx = newX - prevX;
+        const dy = newY - prevY;
 
-    const stepSize = 2;
-    const distance = Math.sqrt(dx * dx + dy * dy);
+        const stepSize = 2;
+        const distance = Math.sqrt(dx * dx + dy * dy);
 
-    let finalX = prevX;
-    let finalY = prevY;
+        let finalX = prevX;
+        let finalY = prevY;
 
-    for (let step = 0; step < distance; step += stepSize) {
-        const nextX = prevX + dx * (step / distance);
-        const nextY = prevY + dy * (step / distance);
-        if (isCollidingWithWalls(nextX, nextY, playerSize)) {
-            finalX = prevX;
-            finalY = prevY;
-            break;
+        for (let step = 0; step < distance; step += stepSize) {
+            const nextX = prevX + dx * (step / distance);
+            const nextY = prevY + dy * (step / distance);
+            if (isCollidingWithWalls(nextX, nextY, playerSize)) {
+                finalX = prevX;
+                finalY = prevY;
+                break;
+            }
+            finalX = nextX;
+            finalY = nextY;
         }
-        finalX = nextX;
-        finalY = nextY;
-    }
 
-    player.style.left = finalX + 'px';
-    player.style.top = finalY + 'px';
-    prevX = finalX;
-    prevY = finalY;
+        player.style.left = finalX + 'px';
+        player.style.top = finalY + 'px';
+        prevX = finalX;
+        prevY = finalY;
 
-    if (checkCollision(player, end)) {
-        score++;
-        scoreCounter.textContent = 'Score: ' + score;
-        if (endpointPosition === 'topRight') {
-            moveEndpointToBottomLeft();
-        } else if (endpointPosition === 'bottomLeft') {
-            endpointPosition = 'disappear';
-            end.style.display = 'none';
-            playJumpscare();
+        if (checkCollision(player, end)) {
+            score++;
+            scoreCounter.textContent = 'Score: ' + score;
+            if (endpointPosition === 'topRight') {
+                moveEndpointToBottomLeft();
+            } else if (endpointPosition === 'bottomLeft') {
+                endpointPosition = 'disappear';
+                end.style.display = 'none';
+                playJumpscare();
+            }
         }
     }
-}
-
-function movePlayerWithMouse(event) {
-    movePlayer(event);
 }
 
 function isCollidingWithWalls(x, y, playerSize) {
