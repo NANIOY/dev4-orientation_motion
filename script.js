@@ -11,14 +11,12 @@ window.addEventListener('deviceorientation', movePlayer);
 function movePlayer(event) {
     const mazeRect = maze.getBoundingClientRect();
     const playerSize = parseInt(window.getComputedStyle(player).width);
-    const mazeCenterX = mazeRect.width / 2;
-    const mazeCenterY = mazeRect.height / 2;
 
-    let newX = mazeCenterX + event.gamma * (mazeRect.width / 90) - playerSize / 2;
-    let newY = mazeCenterY + event.beta * (mazeRect.height / 180) - playerSize / 2;
+    let newX = mazeRect.left + event.gamma * (mazeRect.width / 90) - playerSize / 2;
+    let newY = mazeRect.top + event.beta * (mazeRect.height / 180) - playerSize / 2;
 
-    newX = Math.max(0, Math.min(mazeRect.width - playerSize, newX));
-    newY = Math.max(0, Math.min(mazeRect.height - playerSize, newY));
+    newX = Math.max(mazeRect.left, Math.min(mazeRect.right - playerSize, newX));
+    newY = Math.max(mazeRect.top, Math.min(mazeRect.bottom - playerSize, newY));
 
     const dx = newX - prevX;
     const dy = newY - prevY;
