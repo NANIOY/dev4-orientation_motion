@@ -8,6 +8,8 @@ let score = 0;
 let prevX = 0;
 let prevY = 0;
 
+let endpointPosition = 'topRight';
+
 window.addEventListener('deviceorientation', movePlayer);
 
 function movePlayer(event) {
@@ -51,7 +53,13 @@ function movePlayer(event) {
     if (checkCollision(player, end)) {
         score++;
         scoreCounter.textContent = 'Score: ' + score;
-        moveEndpointToTopRight();
+        if (endpointPosition === 'topRight') {
+            moveEndpointToBottomLeft();
+        } else if (endpointPosition === 'bottomLeft') {
+            endpointPosition = 'disappear';
+            end.style.display = 'none';
+            playJumpscare();
+        }
     }
 }
 
@@ -79,4 +87,30 @@ function checkCollision(player, target) {
 function moveEndpointToTopRight() {
     end.style.top = '10px';
     end.style.right = '10px';
+    endpointPosition = 'topRight';
+}
+
+function moveEndpointToBottomLeft() {
+    end.style.top = 'calc(100% - 10px - var(--end-size))';
+    end.style.left = '10px';
+    endpointPosition = 'bottomLeft';
+}
+
+function playJumpscare() {
+    const jumpscareImage = document.createElement('img');
+    jumpscareImage.src = 'face.jpeg';
+    jumpscareImage.style.position = 'absolute';
+    jumpscareImage.style.width = '100%';
+    jumpscareImage.style.height = '100%';
+    jumpscareImage.style.top = '0';
+    jumpscareImage.style.left = '0';
+    document.body.appendChild(jumpscareImage);
+
+    const jumpscareSound = new Audio('sound.mp3');
+    jumpscareSound.volume = 1;
+    jumpscareSound.play();
+
+    setTimeout(() => {
+        document.body.removeChild(jumpscareImage);
+    }, 3000);
 }
