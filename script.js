@@ -1,6 +1,8 @@
+const overlay = document.getElementById('overlay');
+const orientationButton = document.getElementById('orientationButton');
 const maze = document.getElementById('maze');
 const player = document.getElementById('player');
-let end = document.getElementById('end');
+const end = document.getElementById('end');
 const walls = document.querySelectorAll('.wall');
 const scoreCounter = document.getElementById('scoreCounter');
 let score = 0;
@@ -10,7 +12,15 @@ let prevY = 0;
 
 let endpointPosition = 'topRight';
 
-window.addEventListener('deviceorientation', movePlayer);
+orientationButton.addEventListener('click', enableOrientation);
+
+function enableOrientation() {
+    overlay.style.display = 'none';
+    alert("To play this game, please enable device orientation by rotating your device. Tap 'OK' to continue.");
+    orientationButton.style.display = 'none';
+    window.addEventListener('deviceorientation', movePlayer);
+    document.addEventListener('mousemove', movePlayerWithMouse);
+}
 
 function movePlayer(event) {
     const mazeRect = maze.getBoundingClientRect();
@@ -18,8 +28,15 @@ function movePlayer(event) {
     const mazeCenterX = mazeRect.width / 2;
     const mazeCenterY = mazeRect.height / 2;
 
-    let newX = mazeCenterX + event.gamma * (mazeRect.width / 90) - playerSize / 2;
-    let newY = mazeCenterY + event.beta * (mazeRect.height / 180) - playerSize / 2;
+    let newX, newY;
+
+    if (event instanceof MouseEvent) {
+        newX = event.clientX - playerSize / 2;
+        newY = event.clientY - playerSize / 2;
+    } else if (event instanceof DeviceOrientationEvent) {
+        newX = mazeCenterX + event.gamma * (mazeRect.width / 90) - playerSize / 2;
+        newY = mazeCenterY + event.beta * (mazeRect.height / 180) - playerSize / 2;
+    }
 
     newX = Math.max(0, Math.min(mazeRect.width - playerSize, newX));
     newY = Math.max(0, Math.min(mazeRect.height - playerSize, newY));
@@ -63,6 +80,10 @@ function movePlayer(event) {
     }
 }
 
+function movePlayerWithMouse(event) {
+    movePlayer(event);
+}
+
 function isCollidingWithWalls(x, y, playerSize) {
     for (let wall of walls) {
         const wallRect = wall.getBoundingClientRect();
@@ -98,7 +119,7 @@ function moveEndpointToBottomLeft() {
 
 function playJumpscare() {
     const jumpscareImage = document.createElement('img');
-    jumpscareImage.src = 'face.jpeg';
+    jumpscareImage.src = 'face.jpg';
     jumpscareImage.style.position = 'absolute';
     jumpscareImage.style.width = '100%';
     jumpscareImage.style.height = '100%';
