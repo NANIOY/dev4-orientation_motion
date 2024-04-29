@@ -17,24 +17,13 @@ function movePlayer(event) {
     newX = Math.max(0, Math.min(mazeRect.width - playerSize, newX));
     newY = Math.max(0, Math.min(mazeRect.height - playerSize, newY));
 
-    const stepSize = 2;
-    const dx = newX - player.offsetLeft;
-    const dy = newY - player.offsetTop;
-    const distance = Math.sqrt(dx * dx + dy * dy);
+    if (!isCollidingWithWalls(newX, newY, playerSize)) {
+        player.style.left = newX + 'px';
+        player.style.top = newY + 'px';
 
-    for (let step = 0; step < distance; step += stepSize) {
-        const nextX = player.offsetLeft + dx * (step / distance);
-        const nextY = player.offsetTop + dy * (step / distance);
-        if (isCollidingWithWalls(nextX, nextY, playerSize)) {
-            return;
+        if (checkCollision(player, end)) {
+            alert('Congratulations! You made it to the end!');
         }
-    }
-
-    player.style.left = newX + 'px';
-    player.style.top = newY + 'px';
-
-    if (checkCollision(player, end)) {
-        alert('Congratulations! You made it to the end!');
     }
 }
 
@@ -53,8 +42,8 @@ function checkCollision(player, target) {
     const playerRect = player.getBoundingClientRect();
     const targetRect = target.getBoundingClientRect();
 
-    return !(playerRect.right < targetRect.left ||
-        playerRect.left > targetRect.right ||
-        playerRect.bottom < targetRect.top ||
-        playerRect.top > targetRect.bottom);
+    return !(playerRect.right < targetRect.left || 
+             playerRect.left > targetRect.right || 
+             playerRect.bottom < targetRect.top || 
+             playerRect.top > targetRect.bottom);
 }
