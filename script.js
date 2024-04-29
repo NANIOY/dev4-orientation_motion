@@ -51,7 +51,6 @@ function movePlayer(event) {
     if (checkCollision(player, end)) {
         score++;
         scoreCounter.textContent = 'Score: ' + score;
-        alert('Congratulations! You made it to the end!');
         moveEndpointToTopRight();
     }
 }
