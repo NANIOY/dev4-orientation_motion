@@ -8,14 +8,31 @@ html {
     background-color: black;
 }
 
-#scoreCounter {
+#topleft {
     position: absolute;
     top: 0;
     left: 0;
-    color: white;
-    font-size: 24px;
     padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+#scoreCounter {    
+    color: black;
+    font-size: 24px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+#resetButton {    
+    color: white;
+    background-color: rgb(93, 44, 240);
+    border: none;
+    border-radius: 2px;
+    font-size: 12px;
+    padding: 4px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    cursor: pointer;
 }
 
 #maze {

@@ -5,6 +5,7 @@ const player = document.getElementById('player');
 const end = document.getElementById('end');
 const walls = document.querySelectorAll('.wall');
 const scoreCounter = document.getElementById('scoreCounter');
+const resetButton = document.getElementById('resetButton');
 let score = 0;
 
 let prevX = 0;
@@ -13,6 +14,14 @@ let prevY = 0;
 let endpointPosition = 'topRight';
 
 orientationButton.addEventListener('click', enableOrientation);
+resetButton.addEventListener('click', resetPlayerPosition);
+
+function resetPlayerPosition() {
+    prevX = 0;
+    prevY = 0;
+    player.style.left = '0px';
+    player.style.top = '0px';
+}
 
 function enableOrientation() {
     overlay.style.display = 'none';
@@ -103,12 +112,6 @@ function checkCollision(player, target) {
         playerRect.left > targetRect.right ||
         playerRect.bottom < targetRect.top ||
         playerRect.top > targetRect.bottom);
-}
-
-function moveEndpointToTopRight() {
-    end.style.top = '10px';
-    end.style.right = '10px';
-    endpointPosition = 'topRight';
 }
 
 function moveEndpointToBottomLeft() {
